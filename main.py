@@ -51,26 +51,61 @@ class Node:
 
 
 # variables and functions for gui
-
 def search():
-    
+    global searchbartext
+    global allNodes
+    global currentClass
+    global searchtextvariable
+
+    if allNodes.__contains__(searchbartext.get()):
+        currentClass = allNodes[searchbartext.get()]
+        searchbartext.set("")
+    else:
+        searchtextvariable.set("Unable to find " + searchbartext.get())
+
+
+def keyevent(i):
+    if i.keysym == "Return":
+        search()
+
+
+def destroyAll():
+    global currentObjects
+    for obj in currentObjects:
+        obj.destroy()
+
+
+def update():
+    global currentClass
+    global currentObjects
+
+    destroyAll()
+
 
 gui = Tk(className='Improved CS Graph')
-gui.geometry('700x500')
-searchbar = Entry(gui, width=50)
+gui.geometry('900x500')
+searchbartext = StringVar()
+searchbar = Entry(gui, width=50, textvariable=searchbartext, font='Helvetica 12')
 searchbar.grid(row=1, column=1, columnspan=5, padx=10, pady=10, sticky=W + E + N + S)
-searchbutton = Button(gui, width=5, text="Search", command=search)
+searchbutton = Button(gui, text="Search", command=search, font='Helvetica 12')
 searchbutton.grid(row=1, column=6, padx=10, pady=10, sticky=W + E + N + S)
 searchtextvariable = StringVar()
 searchtextvariable.set("Search a class to begin! Example: 'CS 1101'")
-searchtext = Label(gui, textvariable=searchtextvariable, justify=LEFT)
+searchtext = Label(gui, textvariable=searchtextvariable, justify=LEFT, font='Helvetica 12')
 searchtext.grid(row=2, column=0, columnspan=5, padx=10, sticky=W + E + N + S)
 checkAllClasses = IntVar()
 checkAllClasses.set(1)
-checkbuttonForClasses = Checkbutton(gui, width=40,
-                                    text="Include Classes Recommended by CS Students?", variable=checkAllClasses)
-checkbuttonForClasses.grid(row=1, column=7, columnspan=4, padx=10, pady=10, sticky=W + E + N + S)
+checkbuttonForClasses = Checkbutton(gui, width=40, text="Include Classes Recommended by CS Students?",
+                                    variable=checkAllClasses, font='Helvetica 12')
+checkbuttonForClasses.grid(row=1, column=7, columnspan=4, pady=10, sticky=W + E + N + S)
 currentClass = None
+currentClassObject = None
+recommendedClassObjects = []
+recommendedClassTexts = []
+gui.bind('<Key>', keyevent)
+
+recommendedClassTexts.append(
+    Label(gui, text="Recommended Classes", font='Helvetica 12 underline').grid(row=3, column=0, columnspan=2, sticky=W + E + N + S))
 
 # read csv
 allNodes = {}
