@@ -83,7 +83,7 @@ def update():
 
 
 gui = Tk(className='Improved CS Graph')
-gui.geometry('900x500')
+gui.geometry('800x500')
 searchbartext = StringVar()
 searchbar = Entry(gui, width=50, textvariable=searchbartext, font='Helvetica 12')
 searchbar.grid(row=1, column=1, columnspan=5, padx=10, pady=10, sticky=W + E + N + S)
@@ -95,17 +95,22 @@ searchtext = Label(gui, textvariable=searchtextvariable, justify=LEFT, font='Hel
 searchtext.grid(row=2, column=0, columnspan=5, padx=10, sticky=W + E + N + S)
 checkAllClasses = IntVar()
 checkAllClasses.set(1)
-checkbuttonForClasses = Checkbutton(gui, width=40, text="Include Classes Recommended by CS Students?",
+checkbuttonForClasses = Checkbutton(gui, text="Student Recommendations?",
                                     variable=checkAllClasses, font='Helvetica 12')
 checkbuttonForClasses.grid(row=1, column=7, columnspan=4, pady=10, sticky=W + E + N + S)
 currentClass = None
 currentClassObject = None
 recommendedClassObjects = []
 recommendedClassTexts = []
+nextClassObjects = []
+nextClassTexts = []
 gui.bind('<Key>', keyevent)
 
-recommendedClassTexts.append(
-    Label(gui, text="Recommended Classes", font='Helvetica 12 underline').grid(row=3, column=0, columnspan=2, sticky=W + E + N + S))
+recommendedClassTexts.append(Label(gui, text="Recommended Classes", font='Helvetica 12 underline')
+                             .grid(row=3, column=0, columnspan=2, sticky=W + E + N + S))
+nextClassTexts.append(Label(gui, text="Next Classes", font='Halvetica 12 underline')
+                      .grid(row=3, column=7, columnspan=2, sticky=W+E+N+S, pady=10))
+
 
 # read csv
 allNodes = {}
