@@ -82,6 +82,12 @@ def update():
     destroyAll()
 
 
+def changeCurrentClass(newClass):
+    global currentClass
+
+    currentClass = newClass
+
+
 gui = Tk(className='Improved CS Graph')
 gui.geometry('800x500')
 searchbartext = StringVar()
@@ -106,11 +112,16 @@ nextClassObjects = []
 nextClassTexts = []
 gui.bind('<Key>', keyevent)
 
-recommendedClassTexts.append(Label(gui, text="Recommended Classes", font='Helvetica 12 underline')
-                             .grid(row=3, column=0, columnspan=2, sticky=W + E + N + S))
-nextClassTexts.append(Label(gui, text="Next Classes", font='Halvetica 12 underline')
-                      .grid(row=3, column=7, columnspan=2, sticky=W+E+N+S, pady=10))
+recommendedClassObjects.append(Label(gui, text="Recommended Classes", font='Helvetica 12 underline')
+                               .grid(row=3, column=0, columnspan=2, sticky=W + E + N + S))
+nextClassObjects.append(Label(gui, text="Next Classes", font='Halvetica 12 underline')
+                        .grid(row=3, column=7, columnspan=2, sticky=W + E + N + S, pady=10))
 
+for i in range(5):
+    text = StringVar()
+    button = Button(gui, textvariable=text, width=30, command=)
+    button.grid(row=4+i, column=0, columnspan=2, sticky=E+W+N+S)
+    button.argument = 5
 
 # read csv
 allNodes = {}
