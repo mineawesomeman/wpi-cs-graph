@@ -49,6 +49,32 @@ class Node:
     def getNexts(self):
         return self.nexts
 
+    def __str__(self):
+        return self.getCode()
+
+    def __repr__(self):
+        return self.getCode()
+
+
+class ClassButton(Button):
+    def __init__(self, mygui, classToGo=None, row=0, column=0, text="", columnspan=2):
+        self.text = StringVar()
+        self.classToGo = classToGo
+        self.text.set(text)
+        super().__init__(mygui, textvariable=self.text, command=self.myCommand, font="Helvetica 12")
+        super().grid(row=row, column=column, pady=5, sticky=N + E + W + S, columnspan=columnspan, padx=5)
+
+    def myCommand(self):
+        if self.classToGo is not None:
+            changeCurrentClass(self.classToGo)
+            update()
+
+    def setText(self, text):
+        self.text.set(text)
+
+    def getClass(self):
+        return self.classToGo
+
 
 # variables and functions for gui
 def search():
@@ -56,10 +82,13 @@ def search():
     global allNodes
     global currentClass
     global searchtextvariable
+    text = searchbartext.get()
+    text = text.upper()
 
-    if allNodes.__contains__(searchbartext.get()):
-        currentClass = allNodes[searchbartext.get()]
+    if allNodes.__contains__(text):
+        currentClass = allNodes[text]
         searchbartext.set("")
+        update()
     else:
         searchtextvariable.set("Unable to find " + searchbartext.get())
 
@@ -71,15 +100,64 @@ def keyevent(i):
 
 def destroyAll():
     global currentObjects
+    global currentCanvasObjects
+    global circleCanvas
+
     for obj in currentObjects:
         obj.destroy()
+    currentObjects = []
+
+    for obj in currentCanvasObjects:
+        circleCanvas.delete(obj)
+    currentCanvasObjects = []
 
 
 def update():
     global currentClass
     global currentObjects
+    global checkAllClasses
+    global gui
 
     destroyAll()
+
+    if currentClass is not None:
+        recommendedClassLabel = Label(gui, text="Recommended Classes", font='Helvetica 12 underline')
+        recommendedClassLabel.grid(row=3, column=0, columnspan=2, sticky=W + E + N + S)
+        nextClassLabel = Label(gui, text="Next Classes", font='Halvetica 12 underline')
+        nextClassLabel.grid(row=3, column=7, columnspan=2, sticky=W + E + N + S, pady=10)
+
+        currentObjects.append(recommendedClassLabel)
+        currentObjects.append(nextClassLabel)
+
+        if checkAllClasses.get() == 1:
+            rClassesToRender = currentClass.getAllRecommendeds()
+        else:
+            rClassesToRender = currentClass.getRequireds()
+
+        nClassesToRender = currentClass.getNexts()
+
+        if len(rClassesToRender) > 5:
+            rClassesToRender = rClassesToRender[:5]
+
+        if len(nClassesToRender) > 5:
+            nClassesToRender = nClassesToRender[:5]
+
+        row = 4
+        for csclass in rClassesToRender:
+            classObject = ClassButton(gui, classToGo=csclass, text=csclass.getCode(), row=row, column=0)
+            row = row + 1
+            currentObjects.append(classObject)
+
+        row = 4
+        for csclass in nClassesToRender:
+            classObject = ClassButton(gui, classToGo=csclass, text=csclass.getCode(), row=row, column=7, columnspan=3)
+            row = row + 1
+            currentObjects.append(classObject)
+
+        circle = circleCanvas.create_oval(75, 50, 225, 200, fill="#66b3ff", outline="")
+        currentCanvasObjects.append(circle)
+
+        text = circleCanvas.create_text(150, 125, text=currentClass.getCode(), font='Helvetica 20 bold')
 
 
 def changeCurrentClass(newClass):
@@ -89,7 +167,7 @@ def changeCurrentClass(newClass):
 
 
 gui = Tk(className='Improved CS Graph')
-gui.geometry('800x500')
+# gui.geometry('800x500')
 searchbartext = StringVar()
 searchbar = Entry(gui, width=50, textvariable=searchbartext, font='Helvetica 12')
 searchbar.grid(row=1, column=1, columnspan=5, padx=10, pady=10, sticky=W + E + N + S)
@@ -101,27 +179,16 @@ searchtext = Label(gui, textvariable=searchtextvariable, justify=LEFT, font='Hel
 searchtext.grid(row=2, column=0, columnspan=5, padx=10, sticky=W + E + N + S)
 checkAllClasses = IntVar()
 checkAllClasses.set(1)
-checkbuttonForClasses = Checkbutton(gui, text="Student Recommendations?",
+checkbuttonForClasses = Checkbutton(gui, text="Student Recommendations?", command=update,
                                     variable=checkAllClasses, font='Helvetica 12')
 checkbuttonForClasses.grid(row=1, column=7, columnspan=4, pady=10, sticky=W + E + N + S)
 currentClass = None
-currentClassObject = None
-recommendedClassObjects = []
-recommendedClassTexts = []
-nextClassObjects = []
-nextClassTexts = []
+currentObjects = []
+currentCanvasObjects = []
 gui.bind('<Key>', keyevent)
 
-recommendedClassObjects.append(Label(gui, text="Recommended Classes", font='Helvetica 12 underline')
-                               .grid(row=3, column=0, columnspan=2, sticky=W + E + N + S))
-nextClassObjects.append(Label(gui, text="Next Classes", font='Halvetica 12 underline')
-                        .grid(row=3, column=7, columnspan=2, sticky=W + E + N + S, pady=10))
-
-for i in range(5):
-    text = StringVar()
-    button = Button(gui, textvariable=text, width=30, command=)
-    button.grid(row=4+i, column=0, columnspan=2, sticky=E+W+N+S)
-    button.argument = 5
+circleCanvas = Canvas(gui, height=300, width=300)
+circleCanvas.grid(row=3, rowspan=6, column=2, columnspan=5)
 
 # read csv
 allNodes = {}
