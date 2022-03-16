@@ -1,7 +1,5 @@
 import csv
-import tkinter as tk
 from tkinter import *
-from tkinter import ttk
 
 
 class Node:
@@ -57,11 +55,14 @@ class Node:
 
 
 class ClassButton(Button):
-    def __init__(self, mygui, classToGo=None, row=0, column=0, text="", columnspan=2):
+    def __init__(self, mygui, classToGo=None, row=0, column=0, text="", columnspan=2, height=0):
         self.text = StringVar()
         self.classToGo = classToGo
         self.text.set(text)
-        super().__init__(mygui, textvariable=self.text, command=self.myCommand, font="Helvetica 12")
+        if height == 0:
+            super().__init__(mygui, textvariable=self.text, command=self.myCommand, font="Helvetica 12")
+        else:
+            super().__init__(mygui, textvariable=self.text, command=self.myCommand, font="Helvetica 12", height=height)
         super().grid(row=row, column=column, pady=5, sticky=N + E + W + S, columnspan=columnspan, padx=5)
 
     def myCommand(self):
@@ -144,20 +145,52 @@ def update():
 
         row = 4
         for csclass in rClassesToRender:
-            classObject = ClassButton(gui, classToGo=csclass, text=csclass.getCode(), row=row, column=0)
+            classObject = ClassButton(gui, classToGo=csclass, text=csclass.getCode(), row=row, column=0, height=1)
             row = row + 1
             currentObjects.append(classObject)
 
         row = 4
         for csclass in nClassesToRender:
-            classObject = ClassButton(gui, classToGo=csclass, text=csclass.getCode(), row=row, column=7, columnspan=3)
+            classObject = ClassButton(gui, classToGo=csclass, text=csclass.getCode(), row=row, column=7, columnspan=3,
+                                      height=1)
             row = row + 1
             currentObjects.append(classObject)
 
         circle = circleCanvas.create_oval(75, 50, 225, 200, fill="#66b3ff", outline="")
         currentCanvasObjects.append(circle)
 
-        text = circleCanvas.create_text(150, 125, text=currentClass.getCode(), font='Helvetica 20 bold')
+        classCode = circleCanvas.create_text(150, 125, text=currentClass.getCode(), font='Helvetica 20 bold')
+        currentCanvasObjects.append(classCode)
+
+        classNameLabel = Label(gui, text=currentClass.getName(), font='Helvetica 12', wraplength=250)
+        classNameLabel.grid(row=8, column=2, columnspan=5, sticky=N + E + S + W)
+        currentObjects.append(classNameLabel)
+
+        currentClassType = currentClass.getType()
+        if currentClassType > 0:
+            if currentClassType == 1:
+                classTypeLabel = Label(gui, text="This Class Fufills the Systems Requirement",
+                                       font='Helvetica 12', wraplength=250)
+            elif currentClassType == 2:
+                classTypeLabel = Label(gui, text="This Class Fufills the Theory & Languages Requirement",
+                                       font='Helvetica 12', wraplength=250)
+            elif currentClassType == 3:
+                classTypeLabel = Label(gui, text="This Class Fufills the Design Requirement",
+                                       font='Helvetica 12', wraplength=250)
+            elif currentClassType == 4:
+                classTypeLabel = Label(gui, text="This Class Fufills the Social Implications Requirement",
+                                       font='Helvetica 12', wraplength=250)
+            elif currentClassType == 5:
+                classTypeLabel = Label(gui, text="This Class Fufills the Probability Requirement",
+                                       font='Helvetica 12', wraplength=250)
+            elif currentClassType == 6:
+                classTypeLabel = Label(gui, text="This Class Fufills the Statistics Requirement",
+                                       font='Helvetica 12', wraplength=250)
+            else:
+                classTypeLabel = Label(gui, text="", font='Helvetica 12', wraplength=250)
+
+            classTypeLabel.grid(row=9, column=2, columnspan=5, sticky=N + E + S + W)
+            currentObjects.append(classTypeLabel)
 
 
 def changeCurrentClass(newClass):
